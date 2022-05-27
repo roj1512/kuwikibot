@@ -8,7 +8,7 @@ const data = JSON.parse(
 );
 
 const unexpectedChars: string[] = data.unexpectedChars;
-const unexpectedTitles = new Array<string>();
+const unexpectedTitles = new Set<string>();
 
 const start = new Date().getTime();
 let checks = 0;
@@ -22,7 +22,7 @@ try {
     checks++;
     for (const char of unexpectedChars) {
       if (page.title.includes(char)) {
-        unexpectedTitles.push(page.title);
+        unexpectedTitles.add(page.title);
         continue;
       }
     }
