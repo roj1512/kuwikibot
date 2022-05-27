@@ -44,6 +44,6 @@ await Deno.writeTextFile(
     now: new Date().getTime(),
     checks,
     ok,
-    unexpectedTitles,
+    unexpectedTitles: [...unexpectedTitles],
   }),
 );
