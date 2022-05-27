@@ -1,17 +1,18 @@
 import { difference } from "https://deno.land/std@0.140.0/datetime/mod.ts";
 
-import { invokeGet, invokePost, search } from "../../api/mod.ts";
-import "../preact.ts";
-import { from } from "../utils.ts";
+import {
+  edit,
+  parse,
+  query,
+} from "https://deno.land/x/mediawiki@0.0.1/api/mod.ts";
+
+import { client, csrftoken } from "../client.ts";
+import { from, search } from "../utils.ts";
 
 const corrections: [string, string] = Object.entries(JSON.parse(
   await Deno.readTextFile(from(import.meta.url, "data.json")),
   // deno-lint-ignore no-explicit-any
 )) as any;
-
-function prepareSubstring(subtring: string) {
-  return ` ${subtring} `;
-}
 
 const correctedCount = Object.fromEntries(corrections.map((v) => [v[1], 0]));
 const correctedPages = Object.fromEntries(
@@ -20,28 +21,35 @@ const correctedPages = Object.fromEntries(
 const revisions: Record<string, number[]> = {};
 const start = new Date();
 for (const [key, value] of corrections) {
-  for await (const result of search(key)) {
+  for await (
+    const result of search(
+      client,
+      query({ list: "search", srsearch: key, srlimit: "max" }),
+    )
+  ) {
     if (!result.snippet.includes('<span class="searchmatch">')) {
       continue;
     }
-    let { parse: { wikitext: { "*": text } } } = await invokeGet("parse", {
+    let { parse: { wikitext: { "*": text } } } = await client.invoke(parse({
       prop: "wikitext",
       page: result.title,
-    });
-    const exp = new RegExp(prepareSubstring(key), "g");
+    }));
+    const exp = new RegExp(`\\s${key}`, "g");
     const match = text.match(exp);
     if (!match || match.length == 0) {
       continue;
     }
-    text = text.replace(exp, prepareSubstring(value)).replace(
+    text = text.replace(exp, `$1${value}`).replace(
       exp,
-      prepareSubstring(value),
+      `$1${value}`,
     );
-    const { edit: { newrevid } } = await invokePost("edit", {
+    const { edit: { newrevid } } = await client.invoke(edit({
       text,
       title: result.title,
       summary: "چاککردنەوەی ھەڵەی ڕێنووس/ڕێزمان",
-    }, { assertSuccess: true, passCsrfToken: true });
+      token: csrftoken,
+      bot: true,
+    }));
     if (revisions[result.title] == undefined) {
       revisions[result.title] = [];
     }
