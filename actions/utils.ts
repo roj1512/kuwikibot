@@ -33,7 +33,7 @@ export function search(client: Client, request: Request<ParamsQuery>) {
   };
 }
 
-export function listall(client: Client, request: Request<ParamsQuery>) {
+export function allpages(client: Client, request: Request<ParamsQuery>) {
   return {
     async *[Symbol.asyncIterator]() {
       let available = true;

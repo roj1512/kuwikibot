@@ -1,7 +1,7 @@
 import { query } from "https://deno.land/x/mediawiki@0.0.1/api/mod.ts";
 
 import { client } from "../client.ts";
-import { from, listall } from "../utils.ts";
+import { from, allpages } from "../utils.ts";
 
 const data = JSON.parse(
   await Deno.readTextFile(from(import.meta.url, "data.json")),
@@ -15,7 +15,7 @@ let checks = 0;
 let ok = 0;
 
 try {
-  for await (const page of listall(client, query({ list: "listall" }))) {
+  for await (const page of allpages(client, query({ list: "allpages" }))) {
     console.log(`all ${checks} ok ${ok}`);
     checks++;
     for (const char of unexpectedChars) {
