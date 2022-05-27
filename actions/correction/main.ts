@@ -53,7 +53,7 @@ for (const [key, value] of corrections) {
     if (revisions[result.title] == undefined) {
       revisions[result.title] = [];
     }
-    revisions[result.tile].push(newrevid);
+    revisions[result.title].push(newrevid);
     correctedCount[value] += match.length;
     correctedPages[value].push(result.title);
   }
