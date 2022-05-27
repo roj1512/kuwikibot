@@ -64,7 +64,7 @@ const difference_ = difference(start, new Date(), {
 const elapsed =
   `${difference_.hours}:${difference_.hours}:${difference_.seconds}.${difference_.milliseconds}`;
 await Deno.writeTextFile(
-  `${start.getTime()}.txt`,
+  `correction-${start.getTime()}.json`,
   JSON.stringify(
     {
       start: start.toUTCString(),
