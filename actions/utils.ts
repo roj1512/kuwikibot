@@ -32,3 +32,23 @@ export function search(client: Client, request: Request<ParamsQuery>) {
     },
   };
 }
+
+export function listall(client: Client, request: Request<ParamsQuery>) {
+  return {
+    async *[Symbol.asyncIterator]() {
+      let available = true;
+      request[1].apcontinue = undefined;
+      while (available) {
+        const response = await client.invoke(request);
+        if (response.continue) {
+          request[1].apcontinue = response.continue.apcontinue;
+        } else {
+          available = false;
+        }
+        for (const result of response.query.allpages) {
+          yield result;
+        }
+      }
+    },
+  };
+}
