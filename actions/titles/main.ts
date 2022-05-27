@@ -20,11 +20,16 @@ try {
   ) {
     console.log(`all ${checks} ok ${ok}`);
     checks++;
+    let continue_ = false;
     for (const char of unexpectedChars) {
       if (page.title.includes(char)) {
         unexpectedTitles.add(page.title);
-        continue;
+        continue_ = true;
+        break;
       }
+    }
+    if (continue_) {
+      continue;
     }
     ok++;
   }
